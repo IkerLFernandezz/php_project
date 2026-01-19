@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Persistance\InMemory;
+namespace App\Infrastructure\Persistence\InMemory;
 
 use App\Domain\Book\BookId;
 use App\Domain\Book\Book;
@@ -24,6 +24,4 @@ class InMemoryBookRepository implements IBookRepository
     {
         return array_values($this->books);
     }
-
-
 }
