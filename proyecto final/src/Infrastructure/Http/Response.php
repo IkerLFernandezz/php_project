@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Infrastructure\Http;
 
 class Response
@@ -52,4 +54,3 @@ class Response
         return new self($body, $status, ['Content-Type' => 'text/html']);
     }
 }
-

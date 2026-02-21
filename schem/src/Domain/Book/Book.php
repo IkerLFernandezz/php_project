@@ -4,6 +4,9 @@ namespace App\Domain\Book;
 
 use Exception;
 
+use Doctrine\ORM\Mapping\Entity;
+
+#[Entity]
 class Book
 {
     private BookID $id;
