@@ -1,4 +1,0 @@
-config/routes.php -> configurar rutas
-App/Domain -> Modelos
-App/Controllers -> controladores
-App/Views -> vistas

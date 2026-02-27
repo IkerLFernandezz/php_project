@@ -1,0 +1,17 @@
+make department views work: 
+
+- department use cases
+- link department view with usecases
+- make the view so it can handle which courses are in that specific department
+
+make teacher views work:
+
+- teacher use cases
+- link teacher view with usecases
+- make the view so it can handle which specific subjects the teacher works in and handle them
+
+make the student views work:
+- student use cases
+- link student view with usecases
+- make the view so the student can see which subjects he have to attend and their schedule in a calendar format
+

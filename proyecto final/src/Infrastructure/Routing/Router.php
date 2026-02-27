@@ -20,9 +20,11 @@ class Router
         $routes = $this->routeCollection->getRoutes();
 
         foreach ($routes as $route) {
+            $uri = parse_url($request->getUri(), PHP_URL_PATH);
+
             if (
                 $route['method'] === strtoupper($request->getMethod()) &&
-                $this->matchUri($route['path'], $request->getUri(), $params)
+                $this->matchUri($route['path'], $uri, $params)
             ) {
                 [$controllerClass, $action] = $route['handler'];
 
@@ -34,6 +36,9 @@ class Router
                 return;
             }
         }
+
+        http_response_code(404);
+        \App\Infrastructure\Helpers\ViewHelper::render('404');
     }
     private function matchUri(string $routePath, string $requestUri, &$params)
     {

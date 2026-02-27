@@ -6,42 +6,68 @@ namespace App\Domain\Course;
 use App\Domain\Course\Columns\CourseId;
 use App\Domain\Course\Columns\CourseName;
 use App\Domain\Course\Columns\CourseSchedule;
+use App\Domain\Student\Student;
+use App\Domain\Subject\Subject;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Exception;
-use Doctrine\ORM\Mapping\Entity;
 
-#[Entity]
+#[ORM\Entity]
+#[ORM\Table(name: "courses")]
 final class Course
 {
-    private CourseId $id;
+    #[ORM\Id]
+    #[ORM\Column(type: "string", length: 36)]
+    private string $id;
+
+    #[ORM\Embedded(class: CourseName::class, columnPrefix: false)]
     private CourseName $name;
+
+    #[ORM\Embedded(class: CourseSchedule::class, columnPrefix: false)]
     private CourseSchedule $schedule;
 
-    public function __construct(CourseId $id, CourseName $name, CourseSchedule $Schedule)
-    {
+    #[ORM\OneToMany(
+        mappedBy: "course",
+        targetEntity: Student::class
+    )]
+    private Collection $students;
+
+    #[ORM\OneToMany(
+        mappedBy: "course",
+        targetEntity: Subject::class
+    )]
+    private Collection $subjects;
+
+
+
+    public function __construct(
+        CourseId $id,
+        CourseName $name,
+        CourseSchedule $schedule,
+
+    ) {
+        $this->students = new ArrayCollection();
         $this->setId($id);
         $this->setName($name);
-        $this->setSchedule($Schedule);
-    }
+        $this->setSchedule($schedule);
 
-    public function setId(CourseId $id)
-    {
-        if (empty(trim($id->value()))) {
-            throw new Exception("name cannot be empty");
-        }
-        $this->id = $id;
     }
 
     public function getId(): CourseId
     {
-        return $this->id;
+        return new CourseId($this->id);
     }
 
-    public function setName(CourseName $name)
+    public function setId(CourseId $id): void
     {
-        if (empty(trim($name->value()))) {
-            throw new Exception("name cannot be empty");
+        $value = trim($id->value());
+
+        if ($value === '') {
+            throw new Exception("id cannot be empty");
         }
-        $this->name = $name;
+
+        $this->id = $value;
     }
 
     public function getName(): CourseName
@@ -49,21 +75,63 @@ final class Course
         return $this->name;
     }
 
-    public function setSchedule(CourseSchedule $schedule)
+    public function setName(CourseName $name): void
     {
-        $schedule = trim($schedule->value());
-        if (empty(trim($schedule))) {
-            throw new Exception("schedule cannot be empty");
+        if (empty(trim($name->value()))) {
+            throw new Exception("name cannot be empty");
         }
-        if ($schedule === "Matí" || $schedule === "Diurn") {
-            $this->schedule = new CourseSchedule($schedule);
-        } else {
-            throw new Exception("Schedule should be either 'Mati' or 'Diurn'");
-        }
+
+        $this->name = $name;
     }
 
     public function getSchedule(): CourseSchedule
     {
         return $this->schedule;
+    }
+
+    public function setSchedule(CourseSchedule $schedule): void
+    {
+        $value = trim($schedule->value());
+
+        if ($value === '') {
+            throw new Exception("schedule cannot be empty");
+        }
+
+        if ($value !== "Matí" && $value !== "Diurn") {
+            throw new Exception("Schedule must be 'Matí' or 'Diurn'");
+        }
+
+        $this->schedule = new CourseSchedule($value);
+    }
+
+    public function getStudents(): Collection
+    {
+        return $this->students;
+    }
+
+    public function addStudent(Student $student): void
+    {
+        if (!$this->students->contains($student)) {
+            $this->students[] = $student;
+            $student->setCourse($this);
+        }
+    }
+
+    public function removeStudent(Student $student): void
+    {
+        $this->subjects->removeElement($student);
+    }
+
+    public function getSubjects(): Collection
+    {
+        return $this->subjects;
+    }
+
+    public function addSubject(Subject $subject): void
+    {
+        if (!$this->subjects->contains($subject)) {
+            $this->subjects[] = $subject;
+            $subject->setCourse($this);
+        }
     }
 }

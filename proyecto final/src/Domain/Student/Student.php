@@ -4,45 +4,66 @@ declare(strict_types=1);
 namespace App\Domain\Student;
 
 use App\Domain\Course\Columns\CourseId;
+use App\Domain\Course\Course;
 use App\Domain\Student\Columns\StudentId;
 use App\Domain\Student\Columns\StudentName;
 use App\Domain\Student\Columns\StudentSurname;
-use App\Domain\Student\Columns\StudentLicense;
+use App\Domain\Student\Columns\StudentDni;
 use App\Domain\Student\Columns\StudentMail;
-use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping as ORM;
 use Exception;
 
-#[Entity]
+
+#[ORM\Entity]
+#[ORM\Table(name: "students")]
 final class Student
 {
-    private StudentId $id;
+    #[ORM\Id]
+    #[ORM\Column(type: "string", length: 36)]
+    private string $id;
+
+    #[ORM\Embedded(class: StudentName::class, columnPrefix: false)]
     private StudentName $name;
+
+    #[ORM\Embedded(class: StudentSurname::class, columnPrefix: false)]
     private StudentSurname $surname;
-    private CourseId $course;
-    private StudentLicense $license;
+
+    #[ORM\Embedded(class: StudentDni::class, columnPrefix: false)]
+    private StudentDni $dni;
+
+    #[ORM\Embedded(class: StudentMail::class, columnPrefix: false)]
     private StudentMail $mail;
 
-    public function __construct(StudentId $id, StudentName $name, StudentSurname $surname, CourseId $course, StudentLicense $license, StudentMail $mail)
+    #[ORM\ManyToOne(targetEntity: Course::class, inversedBy: "students")]
+    #[ORM\JoinColumn(nullable: false)]
+    private Course $course;
+
+    public function __construct(StudentId $id, StudentName $name, StudentSurname $surname, Course $course, StudentDni $dni, StudentMail $mail)
     {
         $this->setId($id);
         $this->setName($name);
         $this->setSurname($surname);
         $this->setCourse($course);
-        $this->setLicense($license);
+        $this->setDni($dni);
         $this->setMail($mail);
     }
 
     public function getId(): StudentId
     {
-        return $this->id;
+        return new StudentId($this->id);
     }
 
     public function setId(StudentId $id)
     {
-        if (empty(trim($id->value()))) {
+
+        $value = trim($id->value());
+
+        if ($value === '') {
             throw new Exception("id cannot be empty");
         }
-        $this->id = $id;
+
+        $this->id = $value;
+
     }
 
     public function getName(): StudentName
@@ -71,31 +92,27 @@ final class Student
         $this->surname = $surname;
     }
 
-    public function getCourse(): CourseId
+    public function getCourse(): Course
     {
         return $this->course;
     }
 
-    public function setCourse(CourseId $course)
+    public function setCourse(Course $course)
     {
-        if (empty(trim($course->value()))) {
-            throw new Exception("surname cannot be empty");
-        }
         $this->course = $course;
     }
 
-    public function getLicense(): StudentLicense
+    public function getDni(): StudentDni
     {
-        return $this->license;
+        return $this->dni;
     }
 
-    public function setLicense(StudentLicense $license)
+    public function setDni(StudentDni $dni)
     {
-        if (empty(trim($license->value()))) {
-            throw new Exception("license cannot be empty");
+        if (empty(trim($dni->value()))) {
+            throw new Exception("dni cannot be empty");
         }
-        $this->license = $license;
-
+        $this->dni = $dni;
     }
 
     public function getMail(): StudentMail

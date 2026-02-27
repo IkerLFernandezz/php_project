@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Student\Columns;
 
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Embeddable]
 final class StudentId
 {
+    #[ORM\Column(name: "id", type: "string", length: 36)]
     private string $id;
 
     public function __construct(string $id)
