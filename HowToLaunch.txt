@@ -1,0 +1,54 @@
+Levantar docker
+
+en la raiz, ejecutar: docker compose up -d 
+
+
+backend .env
+
+DB_DRIVER=pdo_mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=bd
+DB_USER=bd
+DB_PASSWORD=linuxlinux 
+
+
+frontend .env
+
+APP_NAME="School Front"
+APP_ENV=local
+APP_KEY=base64:hgIYPWgGDTLjgyFizEqxd/jjKqc3LR8KVYlsOc9sUE0=
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8001
+
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
+
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+
+SCHOOL_API_BASE_URL=http://127.0.0.1:8000
+SCHOOL_API_TIMEOUT=10
+
+
+
+frontend
+
+cd school-front
+composer install
+php artisan serve --port=8001
+
+
+backend
+
+cd school-back
+composer install
+php bin\doctrine orm:schema-tool:create
+php -d display_errors=1 127.0.0.1:8000 -t public

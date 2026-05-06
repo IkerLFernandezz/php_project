@@ -1,0 +1,26 @@
+# env
+**/.env
+
+# composer vendor
+**/vendor/
+
+# node
+**/node_modules/
+
+# laravel
+**/storage/logs/*
+**/storage/framework/cache/*
+**/storage/framework/sessions/*
+**/storage/framework/views/*
+**/bootstrap/cache/*
+
+# tests cache
+**/.phpunit.result.cache
+
+# ide
+.vscode/
+.idea/
+
+# system
+.DS_Store
+Thumbs.db

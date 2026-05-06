@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
+
+$entityManagerFactory = require __DIR__ . '/../config/doctrine.php';
+$entityManager = $entityManagerFactory();
+
+ConsoleRunner::run(new SingleManagerProvider($entityManager));
