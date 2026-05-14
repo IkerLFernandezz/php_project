@@ -20,19 +20,20 @@
             <div class="space-y-5">
                 <x-input name="name" label="Nombre" :value="old('name')" required />
                 <x-input name="surname" label="Apellido" :value="old('surname')" required />
-                <x-input name="dni" label="DNI" :value="old('dni')" required />
+                <x-input name="dni" label="DNI" :value="old('dni')" required help="Formato: 12345678X (DNI) o X1234567A (NIE)" />
                 <x-input name="mail" label="Correo" type="email" :value="old('mail')" required />
 
                 <x-select name="departmentId" label="Departamento" required>
                     <option value="">— Selecciona —</option>
                     @foreach ($departments as $dep)
-                        <option value="{{ $dep['id'] }}" {{ old('departmentId') === $dep['id'] ? 'selected' : '' }}>
+                        <option value="{{ $dep['id'] }}"
+                            {{ old('departmentId', request('departmentId')) === $dep['id'] ? 'selected' : '' }}>
                             {{ $dep['name'] }}
                         </option>
                     @endforeach
                 </x-select>
 
-                @if (empty($departments))
+                @if (empty($departments) && !session('error'))
                     <p class="text-sm text-amber-600 dark:text-amber-400">
                         No hay departamentos creados.
                         <a href="{{ route('departments.create') }}" class="underline hover:no-underline">Crea uno primero</a>.

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HandlesApiResources;
 use App\Services\Api\ApiException;
 use App\Services\Api\Resources\CourseApi;
 use App\Services\Api\Resources\SubjectApi;
@@ -11,6 +12,8 @@ use Illuminate\View\View;
 
 class SubjectController extends Controller
 {
+    use HandlesApiResources;
+
     public function __construct(
         private SubjectApi $api,
         private CourseApi $courseApi,
@@ -24,7 +27,7 @@ class SubjectController extends Controller
             $subjects = $this->api->index();
         } catch (ApiException $e) {
             $subjects = [];
-            session()->flash('error', "API error: {$e->getMessage()}");
+            session()->flash('error', "Error al cargar las asignaturas: {$e->getMessage()}");
         }
         return view('subjects.index', compact('subjects'));
     }
@@ -42,8 +45,8 @@ class SubjectController extends Controller
     public function create(): View
     {
         return view('subjects.create', [
-            'courses' => $this->safeIndex($this->courseApi),
-            'teachers' => $this->safeIndex($this->teacherApi),
+            'courses' => $this->safeIndex($this->courseApi, 'cursos'),
+            'teachers' => $this->safeIndex($this->teacherApi, 'profesores'),
         ]);
     }
 
@@ -58,9 +61,9 @@ class SubjectController extends Controller
         try {
             $this->api->create($data);
         } catch (ApiException $e) {
-            return back()->withInput()->with('error', "API error: {$e->getMessage()}");
+            return back()->withInput()->with('error', "Error al crear la asignatura: {$e->getMessage()}");
         }
-        return redirect()->route('subjects.index')->with('success', 'Subject created.');
+        return redirect()->route('subjects.index')->with('success', 'Asignatura creada correctamente.');
     }
 
     public function edit(string $id): View
@@ -72,10 +75,12 @@ class SubjectController extends Controller
         }
         return view('subjects.edit', [
             'subject' => $subject,
-            'teachers' => $this->safeIndex($this->teacherApi),
+            'teachers' => $this->safeIndex($this->teacherApi, 'profesores'),
         ]);
     }
 
+    // Note: courseId is intentionally not editable. Changing a subject's course
+    // after creation would break coherence with already-enrolled students.
     public function update(Request $request, string $id)
     {
         $data = $request->validate([
@@ -86,9 +91,9 @@ class SubjectController extends Controller
         try {
             $this->api->update($id, $data);
         } catch (ApiException $e) {
-            return back()->withInput()->with('error', "API error: {$e->getMessage()}");
+            return back()->withInput()->with('error', "Error al actualizar la asignatura: {$e->getMessage()}");
         }
-        return redirect()->route('subjects.index')->with('success', 'Subject updated.');
+        return redirect()->route('subjects.index')->with('success', 'Asignatura actualizada correctamente.');
     }
 
     public function destroy(string $id)
@@ -96,17 +101,8 @@ class SubjectController extends Controller
         try {
             $this->api->destroy($id);
         } catch (ApiException $e) {
-            return back()->with('error', "API error: {$e->getMessage()}");
+            return back()->with('error', "Error al eliminar la asignatura: {$e->getMessage()}");
         }
-        return redirect()->route('subjects.index')->with('success', 'Subject deleted.');
-    }
-
-    private function safeIndex($apiResource): array
-    {
-        try {
-            return $apiResource->index();
-        } catch (ApiException) {
-            return [];
-        }
+        return redirect()->route('subjects.index')->with('success', 'Asignatura eliminada correctamente.');
     }
 }

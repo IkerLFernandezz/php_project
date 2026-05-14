@@ -23,17 +23,17 @@
 
                 <div>
                     <p class="text-xs font-medium text-ink-700 dark:text-ink-300 mb-1.5">Curso</p>
-                    <div
-                        class="flex items-center gap-2 px-3 py-2 rounded-lg bg-ink-50 dark:bg-ink-800/50 border border-ink-200 dark:border-ink-700">
+                    <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-ink-50 dark:bg-ink-800/50 border border-ink-200 dark:border-ink-700">
                         <x-badge variant="info">{{ $subject['course']['name'] ?? '—' }}</x-badge>
-                        <span class="text-xs text-ink-400 dark:text-ink-500">No editable</span>
+                        <span class="text-xs text-ink-400 dark:text-ink-500">No editable — afectaría a estudiantes ya matriculados</span>
                     </div>
                 </div>
 
                 <x-select name="teacherId" label="Profesor" required>
                     <option value="">— Selecciona —</option>
                     @foreach ($teachers as $teacher)
-                        <option value="{{ $teacher['id'] }}" {{ old('teacherId', $subject['teacher']['id'] ?? '') === $teacher['id'] ? 'selected' : '' }}>
+                        <option value="{{ $teacher['id'] }}"
+                            {{ old('teacherId', $subject['teacher']['id'] ?? '') === $teacher['id'] ? 'selected' : '' }}>
                             {{ $teacher['name'] }} {{ $teacher['surname'] }}
                         </option>
                     @endforeach

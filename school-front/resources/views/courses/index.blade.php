@@ -27,21 +27,15 @@
             <table class="w-full">
                 <thead>
                     <tr class="border-b border-ink-200 dark:border-ink-800 bg-ink-50/50 dark:bg-ink-950/50">
-                        <th
-                            class="text-left px-5 py-3 text-xs font-semibold text-ink-600 dark:text-ink-400 uppercase tracking-wide">
-                            Nombre</th>
-                        <th
-                            class="text-left px-5 py-3 text-xs font-semibold text-ink-600 dark:text-ink-400 uppercase tracking-wide">
-                            Turno</th>
-                        <th
-                            class="text-right px-5 py-3 text-xs font-semibold text-ink-600 dark:text-ink-400 uppercase tracking-wide w-40">
-                            Acciones</th>
+                        <th class="text-left px-5 py-3 text-xs font-semibold text-ink-600 dark:text-ink-400 uppercase tracking-wide">Nombre</th>
+                        <th class="text-left px-5 py-3 text-xs font-semibold text-ink-600 dark:text-ink-400 uppercase tracking-wide">Turno</th>
+                        <th class="text-right px-5 py-3 text-xs font-semibold text-ink-600 dark:text-ink-400 uppercase tracking-wide w-40">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-ink-200 dark:divide-ink-800">
                     @foreach ($courses as $i => $course)
                         <tr class="group hover:bg-ink-50/50 dark:hover:bg-ink-950/50 transition-colors animate-fade-in"
-                            style="animation-delay: {{ $i * 30 }}ms">
+                            style="animation-delay: {{ min($i, 20) * 30 }}ms">
                             <td class="px-5 py-3.5">
                                 <a href="{{ route('courses.show', $course['id']) }}"
                                     class="font-medium hover:text-accent transition-colors">
@@ -50,14 +44,13 @@
                             </td>
                             <td class="px-5 py-3.5">
                                 @if ($course['schedule'] === 'Matí')
-                                    <x-badge variant="warning">Matí</x-badge>
+                                    <x-badge variant="warning">Mañana</x-badge>
                                 @else
-                                    <x-badge variant="info">Diurn</x-badge>
+                                    <x-badge variant="info">Tarde</x-badge>
                                 @endif
                             </td>
                             <td class="px-5 py-3.5 text-right">
-                                <div
-                                    class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                                <div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                                     <a href="{{ route('courses.show', $course['id']) }}"
                                         class="px-2.5 py-1 text-xs font-medium rounded-md text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white hover:bg-ink-100 dark:hover:bg-ink-800 transition-colors">Ver</a>
                                     <a href="{{ route('courses.edit', $course['id']) }}"

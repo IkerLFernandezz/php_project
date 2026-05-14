@@ -20,19 +20,20 @@
             <div class="space-y-5">
                 <x-input name="name" label="Nombre" :value="old('name')" required />
                 <x-input name="surname" label="Apellido" :value="old('surname')" required />
-                <x-input name="dni" label="DNI" :value="old('dni')" required />
+                <x-input name="dni" label="DNI" :value="old('dni')" required help="Formato: 12345678X (DNI) o X1234567A (NIE)" />
                 <x-input name="mail" label="Correo" type="email" :value="old('mail')" required />
 
                 <x-select name="courseId" label="Curso" required>
                     <option value="">— Selecciona —</option>
                     @foreach ($courses as $course)
-                        <option value="{{ $course['id'] }}" {{ old('courseId') === $course['id'] ? 'selected' : '' }}>
-                            {{ $course['name'] }} ({{ $course['schedule'] }})
+                        <option value="{{ $course['id'] }}"
+                            {{ old('courseId', request('courseId')) === $course['id'] ? 'selected' : '' }}>
+                            {{ $course['name'] }} ({{ $course['schedule'] === 'Matí' ? 'Mañana' : 'Tarde' }})
                         </option>
                     @endforeach
                 </x-select>
 
-                @if (empty($courses))
+                @if (empty($courses) && !session('error'))
                     <p class="text-sm text-amber-600 dark:text-amber-400">
                         No hay cursos creados.
                         <a href="{{ route('courses.create') }}" class="underline hover:no-underline">Crea uno primero</a>.

@@ -23,13 +23,14 @@
                 <x-select name="courseId" label="Curso" required>
                     <option value="">— Selecciona —</option>
                     @foreach ($courses as $course)
-                        <option value="{{ $course['id'] }}" {{ old('courseId') === $course['id'] ? 'selected' : '' }}>
-                            {{ $course['name'] }} ({{ $course['schedule'] }})
+                        <option value="{{ $course['id'] }}"
+                            {{ old('courseId', request('courseId')) === $course['id'] ? 'selected' : '' }}>
+                            {{ $course['name'] }} ({{ $course['schedule'] === 'Matí' ? 'Mañana' : 'Tarde' }})
                         </option>
                     @endforeach
                 </x-select>
 
-                @if (empty($courses))
+                @if (empty($courses) && !session('error'))
                     <p class="text-sm text-amber-600 dark:text-amber-400">
                         No hay cursos creados.
                         <a href="{{ route('courses.create') }}" class="underline hover:no-underline">Crea uno primero</a>.
@@ -39,13 +40,14 @@
                 <x-select name="teacherId" label="Profesor" required>
                     <option value="">— Selecciona —</option>
                     @foreach ($teachers as $teacher)
-                        <option value="{{ $teacher['id'] }}" {{ old('teacherId') === $teacher['id'] ? 'selected' : '' }}>
+                        <option value="{{ $teacher['id'] }}"
+                            {{ old('teacherId', request('teacherId')) === $teacher['id'] ? 'selected' : '' }}>
                             {{ $teacher['name'] }} {{ $teacher['surname'] }}
                         </option>
                     @endforeach
                 </x-select>
 
-                @if (empty($teachers))
+                @if (empty($teachers) && !session('error'))
                     <p class="text-sm text-amber-600 dark:text-amber-400">
                         No hay profesores creados.
                         <a href="{{ route('teachers.create') }}" class="underline hover:no-underline">Crea uno primero</a>.

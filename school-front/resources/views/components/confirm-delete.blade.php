@@ -1,9 +1,14 @@
-@props(['action', 'title' => 'Delete this item?', 'message' => 'This action cannot be undone.'])
+@props([
+    'action',
+    'title'   => '¿Eliminar elemento?',
+    'message' => 'Esta acción no se puede deshacer.',
+    'label'   => 'Eliminar',
+])
 
 <div x-data="{ open: false }" class="inline">
     <button type="button" @click="open = true"
         class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium transition-colors">
-        Delete
+        {{ $label }}
     </button>
 
     <template x-teleport="body">
@@ -19,6 +24,7 @@
                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
                 x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
+                @keydown.escape.window="open = false"
                 class="relative w-full max-w-md bg-white dark:bg-ink-900 rounded-xl shadow-lift border border-ink-200 dark:border-ink-800 p-6">
                 <div class="flex items-start gap-4">
                     <div
@@ -37,14 +43,14 @@
                 <div class="flex justify-end gap-2 mt-6">
                     <button type="button" @click="open = false"
                         class="h-9 px-4 text-sm font-medium rounded-md bg-white dark:bg-ink-900 border border-ink-200 dark:border-ink-800 hover:bg-ink-50 dark:hover:bg-ink-800 transition-colors">
-                        Cancel
+                        Cancelar
                     </button>
                     <form method="POST" action="{{ $action }}" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
                             class="h-9 px-4 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors shadow-soft">
-                            Yes, delete
+                            Sí, eliminar
                         </button>
                     </form>
                 </div>

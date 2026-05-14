@@ -23,25 +23,42 @@ class DashboardController extends Controller
 
     public function index(): View
     {
-        $apiUp = true;
         $stats = ['courses' => 0, 'departments' => 0, 'teachers' => 0, 'students' => 0, 'subjects' => 0];
         $recentStudents = [];
         $recentSubjects = [];
 
-        try {
-            $stats['courses'] = count($this->courses->index());
-            $stats['departments'] = count($this->departments->index());
-            $stats['teachers'] = count($this->teachers->index());
-            $allStudents = $this->students->index();
-            $stats['students'] = count($allStudents);
-            $allSubjects = $this->subjects->index();
-            $stats['subjects'] = count($allSubjects);
+        $loaders = [
+            'courses' => [$this->courses, 'cursos'],
+            'departments' => [$this->departments, 'departamentos'],
+            'teachers' => [$this->teachers, 'profesores'],
+            'students' => [$this->students, 'estudiantes'],
+            'subjects' => [$this->subjects, 'asignaturas'],
+        ];
 
-            $recentStudents = array_slice(array_reverse($allStudents), 0, 5);
-            $recentSubjects = array_slice(array_reverse($allSubjects), 0, 5);
-        } catch (ApiException $e) {
-            $apiUp = false;
-            session()->flash('error', "API unreachable: {$e->getMessage()}");
+        $loaded = [];
+        $failed = [];
+
+        foreach ($loaders as $key => [$api, $label]) {
+            try {
+                $items = $api->index();
+                $loaded[$key] = $items;
+                $stats[$key] = count($items);
+            } catch (ApiException) {
+                $failed[] = $label;
+            }
+        }
+
+        if (isset($loaded['students'])) {
+            $recentStudents = array_slice(array_reverse($loaded['students']), 0, 5);
+        }
+        if (isset($loaded['subjects'])) {
+            $recentSubjects = array_slice(array_reverse($loaded['subjects']), 0, 5);
+        }
+
+        $apiUp = empty($failed);
+
+        if (!$apiUp) {
+            session()->flash('error', 'No se pudo cargar: ' . implode(', ', $failed) . '.');
         }
 
         return view('dashboard', compact('stats', 'apiUp', 'recentStudents', 'recentSubjects'));

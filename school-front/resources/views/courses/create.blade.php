@@ -20,10 +20,11 @@
             <div class="space-y-5">
                 <x-input name="name" label="Nombre" :value="old('name')" required />
 
+                {{-- Option values stay as Matí/Diurn (what the API expects), only labels change. --}}
                 <x-select name="schedule" label="Turno" required>
                     <option value="">— Selecciona —</option>
-                    <option value="Matí" {{ old('schedule') === 'Matí' ? 'selected' : '' }}>Matí</option>
-                    <option value="Diurn" {{ old('schedule') === 'Diurn' ? 'selected' : '' }}>Diurn</option>
+                    <option value="Matí"  {{ old('schedule') === 'Matí'  ? 'selected' : '' }}>Mañana</option>
+                    <option value="Diurn" {{ old('schedule') === 'Diurn' ? 'selected' : '' }}>Tarde</option>
                 </x-select>
             </div>
         </x-card>

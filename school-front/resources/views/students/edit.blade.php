@@ -21,14 +21,15 @@
             <div class="space-y-5">
                 <x-input name="name" label="Nombre" :value="old('name', $student['name'])" required />
                 <x-input name="surname" label="Apellido" :value="old('surname', $student['surname'])" required />
-                <x-input name="dni" label="DNI" :value="old('dni', $student['dni'])" required />
+                <x-input name="dni" label="DNI" :value="old('dni', $student['dni'])" required help="Formato: 12345678X (DNI) o X1234567A (NIE)" />
                 <x-input name="mail" label="Correo" type="email" :value="old('mail', $student['mail'])" required />
 
                 <x-select name="courseId" label="Curso" required>
                     <option value="">— Selecciona —</option>
                     @foreach ($courses as $course)
-                        <option value="{{ $course['id'] }}" {{ old('courseId', $student['course']['id'] ?? '') === $course['id'] ? 'selected' : '' }}>
-                            {{ $course['name'] }} ({{ $course['schedule'] }})
+                        <option value="{{ $course['id'] }}"
+                            {{ old('courseId', $student['course']['id'] ?? '') === $course['id'] ? 'selected' : '' }}>
+                            {{ $course['name'] }} ({{ $course['schedule'] === 'Matí' ? 'Mañana' : 'Tarde' }})
                         </option>
                     @endforeach
                 </x-select>

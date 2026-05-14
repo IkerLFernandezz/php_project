@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HandlesApiResources;
 use App\Services\Api\ApiException;
 use App\Services\Api\Resources\CourseApi;
+use App\Services\Api\Resources\StudentApi;
+use App\Services\Api\Resources\SubjectApi;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CourseController extends Controller
 {
-    public function __construct(private CourseApi $api)
-    {
+    use HandlesApiResources;
+
+    public function __construct(
+        private CourseApi $api,
+        private StudentApi $studentApi,
+        private SubjectApi $subjectApi,
+    ) {
     }
 
     public function index(): View
@@ -19,7 +27,7 @@ class CourseController extends Controller
             $courses = $this->api->index();
         } catch (ApiException $e) {
             $courses = [];
-            session()->flash('error', "API error: {$e->getMessage()}");
+            session()->flash('error', "Error al cargar los cursos: {$e->getMessage()}");
         }
 
         return view('courses.index', compact('courses'));
@@ -33,7 +41,10 @@ class CourseController extends Controller
             abort($e->statusCode === 404 ? 404 : 500, $e->getMessage());
         }
 
-        return view('courses.show', compact('course'));
+        $students = $this->filterByRelation($this->studentApi, 'course', $id, 'estudiantes');
+        $subjects = $this->filterByRelation($this->subjectApi, 'course', $id, 'asignaturas');
+
+        return view('courses.show', compact('course', 'students', 'subjects'));
     }
 
     public function create(): View
@@ -51,10 +62,10 @@ class CourseController extends Controller
         try {
             $this->api->create($data);
         } catch (ApiException $e) {
-            return back()->withInput()->with('error', "API error: {$e->getMessage()}");
+            return back()->withInput()->with('error', "Error al crear el curso: {$e->getMessage()}");
         }
 
-        return redirect()->route('courses.index')->with('success', 'Course created.');
+        return redirect()->route('courses.index')->with('success', 'Curso creado correctamente.');
     }
 
     public function edit(string $id): View
@@ -78,10 +89,10 @@ class CourseController extends Controller
         try {
             $this->api->update($id, $data);
         } catch (ApiException $e) {
-            return back()->withInput()->with('error', "API error: {$e->getMessage()}");
+            return back()->withInput()->with('error', "Error al actualizar el curso: {$e->getMessage()}");
         }
 
-        return redirect()->route('courses.index')->with('success', 'Course updated.');
+        return redirect()->route('courses.index')->with('success', 'Curso actualizado correctamente.');
     }
 
     public function destroy(string $id)
@@ -89,9 +100,9 @@ class CourseController extends Controller
         try {
             $this->api->destroy($id);
         } catch (ApiException $e) {
-            return back()->with('error', "API error: {$e->getMessage()}");
+            return back()->with('error', "Error al eliminar el curso: {$e->getMessage()}");
         }
 
-        return redirect()->route('courses.index')->with('success', 'Course deleted.');
+        return redirect()->route('courses.index')->with('success', 'Curso eliminado correctamente.');
     }
 }

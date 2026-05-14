@@ -22,9 +22,8 @@
                 <x-input name="name" label="Nombre" :value="old('name', $course['name'])" required />
 
                 <x-select name="schedule" label="Turno" required>
-                    <option value="Matí" {{ old('schedule', $course['schedule']) === 'Matí' ? 'selected' : '' }}>Matí</option>
-                    <option value="Diurn" {{ old('schedule', $course['schedule']) === 'Diurn' ? 'selected' : '' }}>Diurn
-                    </option>
+                    <option value="Matí"  {{ old('schedule', $course['schedule']) === 'Matí'  ? 'selected' : '' }}>Mañana</option>
+                    <option value="Diurn" {{ old('schedule', $course['schedule']) === 'Diurn' ? 'selected' : '' }}>Tarde</option>
                 </x-select>
             </div>
         </x-card>

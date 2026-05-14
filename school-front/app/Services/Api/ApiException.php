@@ -16,7 +16,9 @@ class ApiException extends Exception
 
     public static function fromResponse(int $statusCode, array $payload): self
     {
-        $message = $payload['error'] ?? "API request failed with status {$statusCode}";
+        $error = $payload['error'] ?? "API request failed with status {$statusCode}";
+        $detail = $payload['message'] ?? null;
+        $message = $detail ? "{$error}: {$detail}" : $error;
         return new self($message, $statusCode, $payload);
     }
 }

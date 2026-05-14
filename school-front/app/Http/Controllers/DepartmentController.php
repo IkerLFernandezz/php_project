@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HandlesApiResources;
 use App\Services\Api\ApiException;
 use App\Services\Api\Resources\DepartmentApi;
+use App\Services\Api\Resources\TeacherApi;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DepartmentController extends Controller
 {
-    public function __construct(private DepartmentApi $api)
-    {
+    use HandlesApiResources;
+
+    public function __construct(
+        private DepartmentApi $api,
+        private TeacherApi $teacherApi,
+    ) {
     }
 
     public function index(): View
@@ -19,7 +25,7 @@ class DepartmentController extends Controller
             $departments = $this->api->index();
         } catch (ApiException $e) {
             $departments = [];
-            session()->flash('error', "API error: {$e->getMessage()}");
+            session()->flash('error', "Error al cargar los departamentos: {$e->getMessage()}");
         }
         return view('departments.index', compact('departments'));
     }
@@ -31,7 +37,10 @@ class DepartmentController extends Controller
         } catch (ApiException $e) {
             abort($e->statusCode === 404 ? 404 : 500, $e->getMessage());
         }
-        return view('departments.show', compact('department'));
+
+        $teachers = $this->filterByRelation($this->teacherApi, 'department', $id, 'profesores');
+
+        return view('departments.show', compact('department', 'teachers'));
     }
 
     public function create(): View
@@ -48,9 +57,9 @@ class DepartmentController extends Controller
         try {
             $this->api->create($data);
         } catch (ApiException $e) {
-            return back()->withInput()->with('error', "API error: {$e->getMessage()}");
+            return back()->withInput()->with('error', "Error al crear el departamento: {$e->getMessage()}");
         }
-        return redirect()->route('departments.index')->with('success', 'Department created.');
+        return redirect()->route('departments.index')->with('success', 'Departamento creado correctamente.');
     }
 
     public function edit(string $id): View
@@ -72,9 +81,9 @@ class DepartmentController extends Controller
         try {
             $this->api->update($id, $data);
         } catch (ApiException $e) {
-            return back()->withInput()->with('error', "API error: {$e->getMessage()}");
+            return back()->withInput()->with('error', "Error al actualizar el departamento: {$e->getMessage()}");
         }
-        return redirect()->route('departments.index')->with('success', 'Department updated.');
+        return redirect()->route('departments.index')->with('success', 'Departamento actualizado correctamente.');
     }
 
     public function destroy(string $id)
@@ -82,8 +91,8 @@ class DepartmentController extends Controller
         try {
             $this->api->destroy($id);
         } catch (ApiException $e) {
-            return back()->with('error', "API error: {$e->getMessage()}");
+            return back()->with('error', "Error al eliminar el departamento: {$e->getMessage()}");
         }
-        return redirect()->route('departments.index')->with('success', 'Department deleted.');
+        return redirect()->route('departments.index')->with('success', 'Departamento eliminado correctamente.');
     }
 }
